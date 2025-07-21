@@ -12,6 +12,7 @@
 // @grant        GM_getResourceURL
 // @resource     bootstrapCSS https://search.nixos.org/bootstrap.min.css
 // @run-at       document-start
+// @license      AGPL-3.0
 // ==/UserScript==
 
 (function() {
