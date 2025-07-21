@@ -8,48 +8,61 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=nixos.org
 // @grant        GM_setValue
 // @grant        GM_getValue
+// @grant        GM_addStyle
+// @run-at       document-start
 // ==/UserScript==
 
-(function () {
-    "use strict";
+(function() {
+    'use strict';
 
-    // 等待页面加载完成
-    window.addEventListener("load", function () {
-        const logo = document.querySelector(".logo");
+    // 1. 在文档加载前就注入CSS隐藏logo
+    GM_addStyle(`
+        .logo {
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+    `);
 
+    // 2. 等待页面完全加载
+    window.addEventListener('load', function() {
+        const logo = document.querySelector('.logo');
         if (!logo) return;
 
-        // 检查是否有存储的自定义logo
-        const customLogo = GM_getValue("customLogo");
+        // 3. 检查是否有存储的自定义logo
+        const customLogo = GM_getValue('customLogo');
         if (customLogo) {
+            // 先设置src再显示，避免闪烁
             logo.src = customLogo;
+            logo.style.opacity = '1';
+            logo.style.visibility = 'visible';
+        } else {
+            // 没有自定义logo时也显示原图
+            logo.style.opacity = '1';
+            logo.style.visibility = 'visible';
         }
 
-        // 添加右键菜单事件
-        logo.addEventListener("contextmenu", function (e) {
+        // 4. 添加右键菜单事件
+        logo.addEventListener('contextmenu', function(e) {
             e.preventDefault();
-
-            if (confirm("您想要修改当前Logo吗？")) {
-                // 创建文件输入元素
-                const input = document.createElement("input");
-                input.type = "file";
-                input.accept = "image/*";
-
-                input.onchange = function (e) {
+            
+            if (confirm('您想要修改当前Logo吗？')) {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                
+                input.onchange = function(e) {
                     const file = e.target.files[0];
                     if (!file) return;
-
+                    
                     const reader = new FileReader();
-                    reader.onload = function (event) {
+                    reader.onload = function(event) {
                         const newLogoSrc = event.target.result;
-                        // 保存到存储
-                        GM_setValue("customLogo", newLogoSrc);
-                        // 更新logo
+                        GM_setValue('customLogo', newLogoSrc);
                         logo.src = newLogoSrc;
                     };
                     reader.readAsDataURL(file);
                 };
-
+                
                 input.click();
             }
         });
