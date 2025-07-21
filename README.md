@@ -2,6 +2,11 @@
 因为骄傲月太长，Logo设计又不好看，为了真正的平等包容，实现了自定义图标的功能。
 
 # 使用方法
+
+[![GreasyFork | Install](https://img.shields.io/badge/-GreasyFork%20%7C%20Install-8B0000?logo=greasyfork&logoColor=white&style=for-the-badge&labelColor=A81D33)](https://greasyfork.org/zh-CN/scripts/543198-searchnixos-logocustom)
+
+打开 https://greasyfork.org/zh-CN/scripts/543198-searchnixos-logocustom （或者点击上面这个图标）
+
 安装完成插件后，打开 https://search.nixos.org
 
 ![main page](./img/main.png)
