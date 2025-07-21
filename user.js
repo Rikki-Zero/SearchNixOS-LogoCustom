@@ -4,7 +4,7 @@
 // @version      2025-07-21
 // @description  因为骄傲月太长，Logo设计又不好看，为了真正的平等包容，实现了自定义图标的功能。
 // @author       Rikki
-// @match        https://search.nixos.org/packages
+// @match        https://search.nixos.org/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=nixos.org
 // @grant        GM_setValue
 // @grant        GM_getValue
