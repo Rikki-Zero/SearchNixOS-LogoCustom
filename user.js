@@ -17,7 +17,7 @@
 (function() {
     'use strict';
 
-    // 1. 在文档加载前就注入CSS隐藏logo和添加Bootstrap样式
+    // 在文档加载前就注入CSS隐藏logo和添加Bootstrap样式
     const styleId = 'SearchNixOS-LogoCustom-style';
     GM_addStyle(`
         #${styleId} .logo {
@@ -73,16 +73,30 @@
             background-color: #da4f49;
             border-color: #bd362f;
         }
+        /* 遮罩层样式 */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 99998;
+        }
     `);
 
-    // 2. 创建自定义弹窗函数
+    // 创建自定义弹窗函数
     function showLogoCustomModal() {
+        // 创建遮罩层
+        const backdrop = document.createElement('div');
+        backdrop.className = 'modal-backdrop';
+        
         // 创建模态框
         const modal = document.createElement('div');
         modal.className = 'logo-custom-modal';
         modal.innerHTML = `
             <div class="modal-header">
-                <h3>自定义Logo设置</h3>
+                <h3>自定义图标设置</h3>
             </div>
             <div class="modal-body">
                 <p>请选择要执行的操作：</p>
@@ -94,7 +108,22 @@
         `;
 
         // 添加到文档
+        document.body.appendChild(backdrop);
         document.body.appendChild(modal);
+
+        // 关闭弹窗函数
+        function closeModal() {
+            modal.remove();
+            backdrop.remove();
+            document.removeEventListener('keydown', handleKeyDown);
+        }
+
+        // 键盘ESC键关闭
+        function handleKeyDown(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        }
 
         // 修改图标按钮事件
         modal.querySelector('.change-logo').addEventListener('click', function() {
@@ -114,7 +143,7 @@
                     if (logo) {
                         logo.src = newLogoSrc;
                     }
-                    modal.remove();
+                    closeModal();
                 };
                 reader.readAsDataURL(file);
             };
@@ -129,18 +158,22 @@
             if (logo) {
                 logo.src = logo.dataset.originalSrc || logo.src;
             }
-            modal.remove();
+            closeModal();
         });
 
-        // 点击模态框外部关闭
+        // 点击遮罩层关闭
+        backdrop.addEventListener('click', closeModal);
+        
+        // 监听ESC键
+        document.addEventListener('keydown', handleKeyDown);
+
+        // 阻止模态框内部点击事件冒泡
         modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                modal.remove();
-            }
+            e.stopPropagation();
         });
     }
 
-    // 3. 等待页面完全加载
+    // 等待页面完全加载
     window.addEventListener('load', function() {
         const logo = document.querySelector('.logo');
         if (!logo) return;
@@ -148,19 +181,19 @@
         // 保存原始logo地址
         logo.dataset.originalSrc = logo.src;
 
-        // 4. 移除之前添加的隐藏样式
+        // 移除之前添加的隐藏样式
         const styleElement = document.querySelector(`style[id="${styleId}"]`);
         if (styleElement) {
             styleElement.remove();
         }
 
-        // 5. 检查是否有存储的自定义logo
+        // 检查是否有存储的自定义logo
         const customLogo = GM_getValue('customLogo');
         if (customLogo) {
             logo.src = customLogo;
         }
 
-        // 6. 修改右键菜单事件
+        // 修改右键菜单事件
         logo.addEventListener('contextmenu', function(e) {
             e.preventDefault();
             showLogoCustomModal();
