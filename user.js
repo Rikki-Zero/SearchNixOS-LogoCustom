@@ -16,8 +16,9 @@
     'use strict';
 
     // 1. 在文档加载前就注入CSS隐藏logo
+    const styleId = 'SearchNixOS-LogoCustom-style';
     GM_addStyle(`
-        .logo {
+        #${styleId} .logo {
             opacity: 0 !important;
             visibility: hidden !important;
         }
@@ -28,20 +29,19 @@
         const logo = document.querySelector('.logo');
         if (!logo) return;
 
-        // 3. 检查是否有存储的自定义logo
-        const customLogo = GM_getValue('customLogo');
-        if (customLogo) {
-            // 先设置src再显示，避免闪烁
-            logo.src = customLogo;
-            logo.style.opacity = '1';
-            logo.style.visibility = 'visible';
-        } else {
-            // 没有自定义logo时也显示原图
-            logo.style.opacity = '1';
-            logo.style.visibility = 'visible';
+        // 3. 移除之前添加的隐藏样式
+        const styleElement = document.querySelector(`style[id="${styleId}"]`);
+        if (styleElement) {
+            styleElement.remove();
         }
 
-        // 4. 添加右键菜单事件
+        // 4. 检查是否有存储的自定义logo
+        const customLogo = GM_getValue('customLogo');
+        if (customLogo) {
+            logo.src = customLogo;
+        }
+
+        // 5. 添加右键菜单事件
         logo.addEventListener('contextmenu', function(e) {
             e.preventDefault();
             
